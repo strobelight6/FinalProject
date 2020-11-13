@@ -421,12 +421,12 @@ head(cbb20)</code></pre>
 ## 5 26.0 30.8 29.3  52.9  43.4  34.8  28.7  69.3  5.2
 ## 6 28.0 35.6 30.9  52.5  46.0  35.2  29.9  71.7  5.1</code></pre>
 <pre class="r"><code># Added 2020 data to cbb.
-cbb1 &lt;- full_join(cbb, cbb20)</code></pre>
+cbb &lt;- full_join(cbb, cbb20)</code></pre>
 <pre><code>## Joining, by = c(&quot;TEAM&quot;, &quot;CONF&quot;, &quot;G&quot;, &quot;W&quot;, &quot;ADJOE&quot;, &quot;ADJDE&quot;, &quot;BARTHAG&quot;, &quot;EFG_O&quot;, &quot;EFG_D&quot;, &quot;TOR&quot;, &quot;TORD&quot;, &quot;ORB&quot;, &quot;DRB&quot;, &quot;FTR&quot;, &quot;FTRD&quot;, &quot;X2P_O&quot;, &quot;X2P_D&quot;, &quot;X3P_O&quot;, &quot;X3P_D&quot;, &quot;ADJ_T&quot;, &quot;WAB&quot;)</code></pre>
 <pre class="r"><code># Dropped rank column and added 2020 as year for 2020 data.
-# I checked first before the join that cbb$YEAR had no NA&#39;s so that only 2020 data&#39;s year was being set.
-cbb1 &lt;- subset(cbb1, select = -c(RK))
-cbb1$YEAR[is.na(cbb1$YEAR)] &lt;- 2020</code></pre>
+# I checked first before the join that cbb$YEAR had no NA&#39;s so that only 2020 data&#39;s year was being set to 2020.
+cbb &lt;- subset(cbb, select = -c(RK))
+cbb$YEAR[is.na(cbb$YEAR)] &lt;- 2020</code></pre>
 </div>
 <div id="cleaning" class="section level2">
 <h2>Cleaning</h2>

@@ -26,11 +26,11 @@ cbb19 <- read.csv("datasets/cbb19.csv")
 cbb20 <- read.csv("datasets/cbb20.csv")
 head(cbb20)
 # Added 2020 data to cbb.
-cbb1 <- full_join(cbb, cbb20)
+cbb <- full_join(cbb, cbb20)
 # Dropped rank column and added 2020 as year for 2020 data.
-# I checked first before the join that cbb$YEAR had no NA's so that only 2020 data's year was being set.
-cbb1 <- subset(cbb1, select = -c(RK))
-cbb1$YEAR[is.na(cbb1$YEAR)] <- 2020
+# I checked first before the join that cbb$YEAR had no NA's so that only 2020 data's year was being set to 2020.
+cbb <- subset(cbb, select = -c(RK))
+cbb$YEAR[is.na(cbb$YEAR)] <- 2020
 ```
 
 ## Cleaning
