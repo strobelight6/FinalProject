@@ -40,9 +40,58 @@ str(cbb20)
 ```
 
 ## Analysis 1
+
+Author - Joel Martin
+
+For this analysis I wanted to look at 3-point shooting percentage. I focused on the Big 12 conference since Iowa state is a part of this conference. 
+
+The first area I wanted to explore was to see how each teams 3-point shooting percentage changed over the course of 6 years from 2015 - 2020.
+
+```{r}
+big12 <- subset(cbb, CONF == 'B12')
+cbb$TEAM <- as.factor(cbb$TEAM)
+ggplot(big12, aes(x = YEAR, y = X3P_O)) + geom_line() + 
+  facet_grid(cols = vars(big12$TEAM)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  xlab('Year') +
+  ylab('Average 3-Point Percentage') +
+  ggtitle('Big 12 Average 3-Point Percentage by Team')
+```
+
+Based on the above graph we can see that most teams ended 2020 with a worse percentage than when they started in 2015 with the exception of TCU and Texas Tech who both had a better shooting percentage than when the data began in 2015.
+
+To get a better idea of how Iowa State compares to its competition in the Big 12 conference I calculated the average 3-point percentage for each team over the 6 years.
+
+```{r}
+big12 <- group_by(big12, TEAM)
+summBig12 <- summarise(big12, avg3PntPercent = round(mean(X3P_O),2))
+ggplot(summBig12, aes(x = TEAM, y = avg3PntPercent, fill = factor(ifelse(TEAM=='Iowa St.', 'Highlighted', 'Normal')))) + 
+  geom_bar(pos = 'stack', stat = 'identity',  show.legend = FALSE) + 
+  scale_fill_manual(name = 'area', values = c('red', 'grey50')) + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))+ 
+  xlab('Team')+ 
+  ylab('Average')+ 
+  ggtitle('Big 12 Average 3-Point Shooting Percentage for 2015-2020')
+```
+
+With the above graph we can see that Kansas holds the first place spot and Iowa State just barely beats Baylor for second place in the Big 12 conference for 3-point shooting average from 2015 - 2020.
+
+Another question I wanted to answer was does a higher 3-Point percentage lead to more wins? To visualize this I found the percentage of wins for each team from 2015 - 2020 then I compared it to each teams average 3-point shooting percentage for 2015 - 2020.
+
 ```{r}
 
+big12$winPercent <- round(big12$W/big12$G, digits = 4)
+
+ggplot(big12, aes(x = X3P_O, y = winPercent)) + 
+  geom_point() +
+  geom_smooth(method = 'lm', color = 'red') +
+  coord_cartesian(ylim = c(0, 1)) +
+  xlab('3-Point Shooting Percentage') + 
+  ylab('Win Rate') + 
+  ggtitle('Big 12 Teams 3-Point Shooting Percentage Compared to Win Rate')
 ```
+
+With the use of a linear regression line in the above graph we can see that a higher 3-point percentage does lead to a higher win rate. Therefore teams wanting to consistently win more games should strive for a higher 3-point shooting percentage.
 
 ## Analysis 2
 ```{r}
