@@ -9,8 +9,12 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+```
+
 ## Obtaining the data
-Dataset cbb contains statistics for each team in seasons 2015-2019 combined. Dataset cbb[n] has statistics for each team for season n. 
+Dataset cbb contains statistics for each team in seasons 2015-2019 combined. Dataset cbb[n] has statistics for each team for season n. Added the data for 2020 to cbb since it has not been added.
 ```{r messages=FALSE}
 cbb <- read.csv("datasets/cbb.csv")
 head(cbb)
@@ -21,6 +25,12 @@ cbb18 <- read.csv("datasets/cbb18.csv")
 cbb19 <- read.csv("datasets/cbb19.csv")
 cbb20 <- read.csv("datasets/cbb20.csv")
 head(cbb20)
+# Added 2020 data to cbb.
+cbb1 <- full_join(cbb, cbb20)
+# Dropped rank column and added 2020 as year for 2020 data.
+# I checked first before the join that cbb$YEAR had no NA's so that only 2020 data's year was being set.
+cbb1 <- subset(cbb1, select = -c(RK))
+cbb1$YEAR[is.na(cbb1$YEAR)] <- 2020
 ```
 
 ## Cleaning
