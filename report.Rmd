@@ -128,9 +128,64 @@ ggarrange(thrVWAB, twoVWAB, TORVWAB, FTRVWAB)
 From this analyses, we can see that higher three point and two point shooting percentages yield higher WAB, according to the positive regression lines. Inversely, we see that higher Allowed Turnover % and Free Throw Rate are yielding lower WAB, Allowed Turnover % giving us a more negative relationship. For teams to get better WAB values, especially Iowa State, they should work on lowering the number of turnovers, number of times the ball is stolen from the team, and possibly how well they free throw.
 
 ## Analysis 3
-```{r}
 
+Author - Joseph Strobel
+
+For this analysis I will look at how rebounding affects team success in the Big 12.
+
+To begin, we simply compare how teams are rebounding over the years 2015-2020 
+
+```{r}
+big12 %>% 
+  ggplot(aes(x=YEAR, y=ORB, group=TEAM, color=TEAM)) + 
+  geom_line() +
+  facet_wrap(~TEAM) + 
+  ggtitle("Big 12 Offensive Rebounding Year Over Year") +
+  ylab("ORB") +
+  xlab("Year") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 ```
+
+We can see that Baylor and West Virginia are consistently atop the Big 12 conference in respect to offensive rebounding while Iowa State as well as other tend to be near the bottom of the conference.
+
+```{r}
+big12 %>% 
+  ggplot(aes(x=YEAR, y=DRB, group=TEAM, color=TEAM)) + 
+  geom_line() +
+  facet_wrap(~TEAM) + 
+  ggtitle("Big 12 Defensive Rebounding Year Over Year") +
+  ylab("DRB") +
+  xlab("Year") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+```
+
+For defensive rebounding we can see that teams are not as decisively different, but rather that there are some trends among teams. Iowa St, Baylor, and Texas tend to be trending upwards while teams like Kansas, Oklahoma, Oklahoma St. and others are trending towards poor defensive rebounding.
+
+Next, we will analyze whether offensive and defensive rebounding have an impact on winning games. 
+
+```{r}
+ggplot(big12, aes(x = ORB, y = winPercent)) + 
+  geom_point() +
+  geom_smooth(method = 'lm', color = 'red') +
+  coord_cartesian(ylim = c(0, 1)) +
+  xlab('ORB') + 
+  ylab('Win Rate') + 
+  ggtitle('Big 12 Teams Offensive Rebound Rate Compared to Win Rate')
+```
+
+From the plot, we can see that there is a slight positive coorelation between ORB and Win Rate. One reason for a positive coorelation could be because team that get more offensive rebounds will have more opportunities for second chance points and will score more often which leads to winning. 
+
+```{r}
+ggplot(big12, aes(x = DRB, y = winPercent)) + 
+  geom_point() +
+  geom_smooth(method = 'lm', color = 'red') +
+  coord_cartesian(ylim = c(0, 1)) +
+  xlab('DRB') + 
+  ylab('Win Rate') + 
+  ggtitle('Big 12 Teams Defensive Rebound Rate Compared to Win Rate')
+```
+
+In this plot we can see that there is a negative coorelation between defensive rebounding rate and win rate. This is an odd coorelation because defensive rebounding is generally thought of as important to prevent second chance points from the opposing team as well as giving your team another offensive possesion. 
 
 ## Analysis 4
 ```{r}
