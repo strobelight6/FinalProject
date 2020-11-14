@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(tidyverse)
+library(ggpubr)
 ```
 
 ## Obtaining the data
@@ -94,9 +95,37 @@ ggplot(big12, aes(x = X3P_O, y = winPercent)) +
 With the use of a linear regression line in the above graph we can see that a higher 3-point percentage does lead to a higher win rate. Therefore teams wanting to consistently win more games should strive for a higher 3-point shooting percentage.
 
 ## Analysis 2
+
+Author - Rabsa Naseer
+
+The Wins Above Bubble (WAB) is the amount of wins a team has minus the amount of wins an average bubble team would expect vs. the team's schedule [Source](https://sethburn.wordpress.com/2019/03/04/parcells-defined-why-unc-greensboro-belongs-in-the-ncaa-tournament/). Thus, a higher WAB would indicate that a team is doing well. The WAB also determines whether the team makes it to the NCAA March Madness Tournament or not.
+
+In this primary analysis, I compare Iowa State's WAB values for each year to those of the other teams that are part of the Big 12 Conference.
+
 ```{r}
+compareWAB <- ggplot(big12, aes(x = TEAM, y = WAB ,color= factor(YEAR))) + 
+  geom_point(pos = 'stack', stat = 'identity',  show.legend = TRUE)+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))+ 
+  xlab('Team')+ 
+  ylab('WAB')+ 
+  ggtitle('Big 12 Wins Above Bubble for 2015-2020') + labs(color='Year')
+compareWAB
 
 ```
+
+According to the above plot, Iowa State was doing well in terms of getting positive WAB values in 2015, 2016, and 2017.  But more recently, they have not been doing well in their number of wins, as the resulting WAB scores are lower; 2018 hitting below 0 and 2020 at 0. Most of the other teams, especially Kansas, seem to be doing much better in their recent years compared to Iowa State.
+
+I then wanted to see what affects the WAB, so I created four plots comparing the three point shooting percentage, two point shooting percentage, turnover rate, and free throw rate to the WAB for the teams.
+```{r}
+##winsVWAB <- ggplot(big12, aes(x = winPercent, y = WAB)) + geom_point() + geom_smooth(method = 'lm') 
+thrVWAB <- ggplot(big12, aes(x = X3P_O, y = WAB)) + geom_point() + geom_smooth(method = 'lm')  + xlab("Three Point Shooting %")
+twoVWAB <- ggplot(big12, aes(x = X2P_O, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Two Point Shooting %")
+TORVWAB <- ggplot(big12, aes(x = TOR, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Turnover % Allowed")
+FTRVWAB <- ggplot(big12, aes(x = FTR, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Free Throw Rate")
+ggarrange(thrVWAB, twoVWAB, TORVWAB, FTRVWAB)
+```
+
+From this analyses, we can see that higher three point and two point shooting percentages yield higher WAB, according to the positive regression lines. Inversely, we see that higher Allowed Turnover % and Free Throw Rate are yielding lower WAB, Allowed Turnover % giving us a more negative relationship. For teams to get better WAB values, especially Iowa State, they should work on lowering the number of turnovers, number of times the ball is stolen from the team, and possibly how well they free throw.
 
 ## Analysis 3
 ```{r}
