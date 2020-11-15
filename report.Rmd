@@ -1,0 +1,225 @@
+---
+title: "Report"
+author: "Team 4"
+date: "11/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+library(dplyr)
+```
+
+## Obtaining the data
+Dataset cbb contains statistics for each team in seasons 2015-2019 combined. Dataset cbb[n] has statistics for each team for season n. Added the data for 2020 to cbb since it has not been added.
+```{r messages=FALSE}
+cbb <- read.csv("datasets/cbb.csv")
+head(cbb)
+cbb15 <- read.csv("datasets/cbb15.csv")
+cbb16 <- read.csv("datasets/cbb16.csv")
+cbb17 <- read.csv("datasets/cbb17.csv")
+cbb18 <- read.csv("datasets/cbb18.csv")
+cbb19 <- read.csv("datasets/cbb19.csv")
+cbb20 <- read.csv("datasets/cbb20.csv")
+head(cbb20)
+# Added 2020 data to cbb.
+cbb <- full_join(cbb, cbb20)
+# Dropped rank column and added 2020 as year for 2020 data.
+# I checked first before the join that cbb$YEAR had no NA's so that only 2020 data's year was being set to 2020.
+cbb <- subset(cbb, select = -c(RK))
+cbb$YEAR[is.na(cbb$YEAR)] <- 2020
+```
+
+## Cleaning
+TODO
+```{r}
+str(cbb20)
+```
+
+## Analysis 1
+
+Author - Joel Martin
+
+For this analysis I wanted to look at 3-point shooting percentage. I focused on the Big 12 conference since Iowa state is a part of this conference. 
+
+The first area I wanted to explore was to see how each teams 3-point shooting percentage changed over the course of 6 years from 2015 - 2020.
+
+```{r}
+big12 <- subset(cbb, CONF == 'B12')
+cbb$TEAM <- as.factor(cbb$TEAM)
+ggplot(big12, aes(x = YEAR, y = X3P_O)) + geom_line() + 
+  facet_grid(cols = vars(big12$TEAM)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  xlab('Year') +
+  ylab('Average 3-Point Percentage') +
+  ggtitle('Big 12 Average 3-Point Percentage by Team')
+```
+
+Based on the above graph we can see that most teams ended 2020 with a worse percentage than when they started in 2015 with the exception of TCU and Texas Tech who both had a better shooting percentage than when the data began in 2015.
+
+To get a better idea of how Iowa State compares to its competition in the Big 12 conference I calculated the average 3-point percentage for each team over the 6 years.
+
+```{r}
+big12 <- group_by(big12, TEAM)
+summBig12 <- summarise(big12, avg3PntPercent = round(mean(X3P_O),2))
+ggplot(summBig12, aes(x = TEAM, y = avg3PntPercent, fill = factor(ifelse(TEAM=='Iowa St.', 'Highlighted', 'Normal')))) + 
+  geom_bar(pos = 'stack', stat = 'identity',  show.legend = FALSE) + 
+  scale_fill_manual(name = 'area', values = c('red', 'grey50')) + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))+ 
+  xlab('Team')+ 
+  ylab('Average')+ 
+  ggtitle('Big 12 Average 3-Point Shooting Percentage for 2015-2020')
+```
+
+With the above graph we can see that Kansas holds the first place spot and Iowa State just barely beats Baylor for second place in the Big 12 conference for 3-point shooting average from 2015 - 2020.
+
+Another question I wanted to answer was does a higher 3-Point percentage lead to more wins? To visualize this I found the percentage of wins for each team from 2015 - 2020 then I compared it to each teams average 3-point shooting percentage for 2015 - 2020.
+
+```{r}
+
+big12$winPercent <- round(big12$W/big12$G, digits = 4)
+
+ggplot(big12, aes(x = X3P_O, y = winPercent)) + 
+  geom_point() +
+  geom_smooth(method = 'lm', color = 'red') +
+  coord_cartesian(ylim = c(0, 1)) +
+  xlab('3-Point Shooting Percentage') + 
+  ylab('Win Rate') + 
+  ggtitle('Big 12 Teams 3-Point Shooting Percentage Compared to Win Rate')
+```
+
+With the use of a linear regression line in the above graph we can see that a higher 3-point percentage does lead to a higher win rate. Therefore teams wanting to consistently win more games should strive for a higher 3-point shooting percentage.
+
+## Analysis 2
+
+Author - Rabsa Naseer
+
+The Wins Above Bubble (WAB) is the amount of wins a team has minus the amount of wins an average bubble team would expect vs. the team's schedule [Source](https://sethburn.wordpress.com/2019/03/04/parcells-defined-why-unc-greensboro-belongs-in-the-ncaa-tournament/). Thus, a higher WAB would indicate that a team is doing well. The WAB also determines whether the team makes it to the NCAA March Madness Tournament or not.
+
+In this primary analysis, I compare Iowa State's WAB values for each year to those of the other teams that are part of the Big 12 Conference.
+
+```{r}
+compareWAB <- ggplot(big12, aes(x = TEAM, y = WAB ,color= factor(YEAR))) + 
+  geom_point(pos = 'stack', stat = 'identity',  show.legend = TRUE)+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))+ 
+  xlab('Team')+ 
+  ylab('WAB')+ 
+  ggtitle('Big 12 Wins Above Bubble for 2015-2020') + labs(color='Year')
+compareWAB
+
+```
+
+According to the above plot, Iowa State was doing well in terms of getting positive WAB values in 2015, 2016, and 2017.  But more recently, they have not been doing well in their number of wins, as the resulting WAB scores are lower; 2018 hitting below 0 and 2020 at 0. Most of the other teams, especially Kansas, seem to be doing much better in their recent years compared to Iowa State.
+
+I then wanted to see what affects the WAB, so I created four plots comparing the three point shooting percentage, two point shooting percentage, turnover rate, and free throw rate to the WAB for the teams.
+```{r}
+##winsVWAB <- ggplot(big12, aes(x = winPercent, y = WAB)) + geom_point() + geom_smooth(method = 'lm') 
+thrVWAB <- ggplot(big12, aes(x = X3P_O, y = WAB)) + geom_point() + geom_smooth(method = 'lm')  + xlab("Three Point Shooting %")
+twoVWAB <- ggplot(big12, aes(x = X2P_O, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Two Point Shooting %")
+TORVWAB <- ggplot(big12, aes(x = TOR, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Turnover % Allowed")
+FTRVWAB <- ggplot(big12, aes(x = FTR, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Free Throw Rate")
+ggarrange(thrVWAB, twoVWAB, TORVWAB, FTRVWAB)
+```
+
+From this analyses, we can see that higher three point and two point shooting percentages yield higher WAB, according to the positive regression lines. Inversely, we see that higher Allowed Turnover % and Free Throw Rate are yielding lower WAB, Allowed Turnover % giving us a more negative relationship. For teams to get better WAB values, especially Iowa State, they should work on lowering the number of turnovers, number of times the ball is stolen from the team, and possibly how well they free throw.
+
+## Analysis 3
+
+Author - Joseph Strobel
+
+For this analysis I will look at how rebounding affects team success in the Big 12.
+
+To begin, we simply compare how teams are rebounding over the years 2015-2020 
+
+```{r}
+big12 %>% 
+  ggplot(aes(x=YEAR, y=ORB, group=TEAM, color=TEAM)) + 
+  geom_line() +
+  facet_wrap(~TEAM) + 
+  ggtitle("Big 12 Offensive Rebounding Year Over Year") +
+  ylab("ORB") +
+  xlab("Year") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+```
+
+We can see that Baylor and West Virginia are consistently atop the Big 12 conference in respect to offensive rebounding while Iowa State as well as other tend to be near the bottom of the conference.
+
+```{r}
+big12 %>% 
+  ggplot(aes(x=YEAR, y=DRB, group=TEAM, color=TEAM)) + 
+  geom_line() +
+  facet_wrap(~TEAM) + 
+  ggtitle("Big 12 Defensive Rebounding Year Over Year") +
+  ylab("DRB") +
+  xlab("Year") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+```
+
+For defensive rebounding we can see that teams are not as decisively different, but rather that there are some trends among teams. Iowa St, Baylor, and Texas tend to be trending upwards while teams like Kansas, Oklahoma, Oklahoma St. and others are trending towards poor defensive rebounding.
+
+Next, we will analyze whether offensive and defensive rebounding have an impact on winning games. 
+
+```{r}
+ggplot(big12, aes(x = ORB, y = winPercent)) + 
+  geom_point() +
+  geom_smooth(method = 'lm', color = 'red') +
+  coord_cartesian(ylim = c(0, 1)) +
+  xlab('ORB') + 
+  ylab('Win Rate') + 
+  ggtitle('Big 12 Teams Offensive Rebound Rate Compared to Win Rate')
+```
+
+From the plot, we can see that there is a slight positive correlation between ORB and Win Rate. One reason for a positive coorelation could be because team that get more offensive rebounds will have more opportunities for second chance points and will score more often which leads to winning. 
+
+```{r}
+ggplot(big12, aes(x = DRB, y = winPercent)) + 
+  geom_point() +
+  geom_smooth(method = 'lm', color = 'red') +
+  coord_cartesian(ylim = c(0, 1)) +
+  xlab('DRB') + 
+  ylab('Win Rate') + 
+  ggtitle('Big 12 Teams Defensive Rebound Rate Compared to Win Rate')
+```
+
+In this plot we can see that there is a negative coorelation between defensive rebounding rate and win rate. This is an odd coorelation because defensive rebounding is generally thought of as important to prevent second chance points from the opposing team as well as giving your team another offensive possesion. 
+
+## Analysis 4
+
+-Author Ahmed Hassan
+
+
+When a player on defense takes hold of the basketball from an offensive player, a steal happens. A turnover is caused when a player with a basketball possession loses control as a result of their own mistake (throwing the basketball out-of-bounds or the mistake of an opponent. In order to determine a player's ball control and ball handling capabilities, a Steal-to-Turnover Ratio is used.
+
+For the first graph, I'm going to explore which team has the highest  Steal to Turn Over ratio within the Big 12.
+
+```
+
+## Analysis 5
+```{r}
+cbb$winPercent <- round(cbb$W/cbb$G, digits = 4)
+cbb$stealToTurn <- round(cbb$TORD/cbb$TOR, digits = 4)
+big12$stealToTurn <- round(big12$TORD/big12$TOR, digits = 4)
+
+
+big12 <- group_by(big12, TEAM)
+ggplot(big12, aes(x = TEAM, y = stealToTurn, fill = factor(ifelse(TEAM=='Iowa St.', 'Highlighted', 'Normal')))) + 
+  geom_bar(pos = 'stack', stat = 'identity',  show.legend = FALSE) + 
+  scale_fill_manual(name = 'area', values = c('red', 'grey50')) + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))+ 
+  xlab('Team')+ 
+  ylab('STEAL TO TURNOVER RATIO')+ 
+  ggtitle('Big 12 STEAL TO TURNOVER RATIO for 2015-2020')
+  
+```
+
+As we can see from the above analysis, Iowa State is surprislgy amongst the 3 schools qualifying for the second place spot in terms of Steal to turn over ratio, alon gwith Kansas St and Texas Tech. West Virginia being in the first spot. Safe to say Iowa state has somes impressive player's with  ball control and ball handling capabilities.
+
+## Analysis 5
+```{r}
+
+```
