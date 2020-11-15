@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(ggpubr)
+library(dplyr)
 ```
 
 ## Obtaining the data
@@ -173,7 +174,7 @@ ggplot(big12, aes(x = ORB, y = winPercent)) +
   ggtitle('Big 12 Teams Offensive Rebound Rate Compared to Win Rate')
 ```
 
-From the plot, we can see that there is a slight positive coorelation between ORB and Win Rate. One reason for a positive coorelation could be because team that get more offensive rebounds will have more opportunities for second chance points and will score more often which leads to winning. 
+From the plot, we can see that there is a slight positive correlation between ORB and Win Rate. One reason for a positive coorelation could be because team that get more offensive rebounds will have more opportunities for second chance points and will score more often which leads to winning. 
 
 ```{r}
 ggplot(big12, aes(x = DRB, y = winPercent)) + 
@@ -188,16 +189,37 @@ ggplot(big12, aes(x = DRB, y = winPercent)) +
 In this plot we can see that there is a negative coorelation between defensive rebounding rate and win rate. This is an odd coorelation because defensive rebounding is generally thought of as important to prevent second chance points from the opposing team as well as giving your team another offensive possesion. 
 
 ## Analysis 4
-```{r}
+
+-Author Ahmed Hassan
+
+
+When a player on defense takes hold of the basketball from an offensive player, a steal happens. A turnover is caused when a player with a basketball possession loses control as a result of their own mistake (throwing the basketball out-of-bounds or the mistake of an opponent. In order to determine a player's ball control and ball handling capabilities, a Steal-to-Turnover Ratio is used.
+
+For the first graph, I'm going to explore which team has the highest  Steal to Turn Over ratio within the Big 12.
 
 ```
 
 ## Analysis 5
 ```{r}
+cbb$winPercent <- round(cbb$W/cbb$G, digits = 4)
+cbb$stealToTurn <- round(cbb$TORD/cbb$TOR, digits = 4)
+big12$stealToTurn <- round(big12$TORD/big12$TOR, digits = 4)
 
+
+big12 <- group_by(big12, TEAM)
+ggplot(big12, aes(x = TEAM, y = stealToTurn, fill = factor(ifelse(TEAM=='Iowa St.', 'Highlighted', 'Normal')))) + 
+  geom_bar(pos = 'stack', stat = 'identity',  show.legend = FALSE) + 
+  scale_fill_manual(name = 'area', values = c('red', 'grey50')) + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))+ 
+  xlab('Team')+ 
+  ylab('STEAL TO TURNOVER RATIO')+ 
+  ggtitle('Big 12 STEAL TO TURNOVER RATIO for 2015-2020')
+  
 ```
 
-## Analysis 6
+As we can see from the above analysis, Iowa State is surprislgy amongst the 3 schools qualifying for the second place spot in terms of Steal to turn over ratio, alon gwith Kansas St and Texas Tech. West Virginia being in the first spot. Safe to say Iowa state has somes impressive player's with  ball control and ball handling capabilities.
+
+## Analysis 5
 ```{r}
 
 ```
