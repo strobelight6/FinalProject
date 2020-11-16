@@ -118,11 +118,10 @@ According to the above plot, Iowa State was doing well in terms of getting posit
 
 I then wanted to see what affects the WAB, so I created four plots comparing the three point shooting percentage, two point shooting percentage, turnover rate, and free throw rate to the WAB for the teams.
 ```{r}
-##winsVWAB <- ggplot(big12, aes(x = winPercent, y = WAB)) + geom_point() + geom_smooth(method = 'lm') 
 thrVWAB <- ggplot(big12, aes(x = X3P_O, y = WAB)) + geom_point() + geom_smooth(method = 'lm')  + xlab("Three Point Shooting %")
 twoVWAB <- ggplot(big12, aes(x = X2P_O, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Two Point Shooting %")
-TORVWAB <- ggplot(big12, aes(x = TOR, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Turnover % Allowed")
-FTRVWAB <- ggplot(big12, aes(x = FTR, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Free Throw Rate")
+TORVWAB <- ggplot(big12, aes(x = TOR, y = WAB)) + geom_point() + geom_smooth(method = 'lm', color = 'red') + xlab("Turnover % Allowed")
+FTRVWAB <- ggplot(big12, aes(x = FTR, y = WAB)) + geom_point() + geom_smooth(method = 'lm', color = 'red') + xlab("Free Throw Rate")
 ggarrange(thrVWAB, twoVWAB, TORVWAB, FTRVWAB)
 ```
 
