@@ -222,3 +222,21 @@ As we can see from the above analysis, Iowa State is surprislgy amongst the 3 sc
 ```{r}
 
 ```
+## Analysis 6
+```{r}
+big12 <- subset(cbb, CONF == 'B12')
+```
+For this Analysis I am looking at Free Throw Ratio(FTR) and wins in the Big 12. FTR is the ratio of Free Throw Attempts to Field Goal Attempts and is calculated by dividing Free Throw Attempts by Field Goal Attempts and converted to a percentage. I am looking into whether or not a low Free Throw Ratio leads to a higher win rate.
+```{r}
+B12WP <- round(big12$W/big12$G, digits = 4)
+FTR <- big12$FTR
+TEAM <- big12$TEAM
+ggplot(big12, aes(x= B12WP,y= FTR , color= factor(TEAM))) + geom_point(pos="identity" , stat= "identity", show.legend= TRUE ) + xlab('Big 12 Win %') + ylab('Big 12 Free Throw Ratio') + ggtitle('Big 12 Wins compaired to FTR') + labs(color= 'Team')
+```
+The Data of the Graph show's that There is little to no correlation between how a team performs and what their Free Throw Ratio is.
+Next I am going to Craft a Bar chart to compare Iowa States FTR to other Colleges in the Big 12
+```{r}
+Year <- big12$YEAR
+ggplot(big12, aes(x= TEAM, y= FTR, color= factor(Year))) +  geom_bar(pos= 'stack', stat= 'identity', show.legend = TRUE) + xlab('Team') + ylab('Free Throw Ratio') + ggtitle('Big 12 Free throw Ratio Compaired') + labs(color= 'Year')
+```
+From the graph we can determine that the years Iowa State has had a relatively low FTR meaning that Iowa State players most likely take more jump shots outside of traffic then other colleges.
