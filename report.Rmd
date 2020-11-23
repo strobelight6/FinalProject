@@ -17,7 +17,8 @@ library(dplyr)
 
 ## Background and questions raised
 
-How do the following statistics impact the number of wins or wins above the bubble of teams in the Big 12 Conference?​
+For this project, we wanted to look at basketball data that includes team stats for all Division 1 Men's basketball teams for the years 2015-2020. Since this dataset includes all Division One teams, we will look at which stats correspond with higher achieving teams. We can do this for all teams and then specifically focus in on Iowa State to see how they perform over the years. It will be very interesting to see over the time period how each team performs and to determine why or why they aren't making it to the end of season tournament. 
+Specifically, we wanted to determine how the following statistics impact the number of wins or wins above the bubble of teams in the Big 12 Conference:​
 
 - 3-Point Shooting ​
 
@@ -34,14 +35,14 @@ How do the following statistics impact the number of wins or wins above the bubb
 Dataset cbb contains statistics for each team in seasons 2015-2019 combined. Dataset cbb[n] has statistics for each team for season n. Added the data for 2020 to cbb since it has not been added.
 ```{r messages=FALSE}
 cbb <- read.csv("datasets/cbb.csv")
-head(cbb)
+##head(cbb)
 cbb15 <- read.csv("datasets/cbb15.csv")
 cbb16 <- read.csv("datasets/cbb16.csv")
 cbb17 <- read.csv("datasets/cbb17.csv")
 cbb18 <- read.csv("datasets/cbb18.csv")
 cbb19 <- read.csv("datasets/cbb19.csv")
 cbb20 <- read.csv("datasets/cbb20.csv")
-head(cbb20)
+##head(cbb20)
 # Added 2020 data to cbb.
 cbb <- full_join(cbb, cbb20)
 # Dropped rank column and added 2020 as year for 2020 data.
@@ -108,7 +109,7 @@ With the use of a linear regression line in this scatterplot we can see that a h
 
 Author - Rabsa Naseer
 
-The Wins Above Bubble (WAB) is the amount of wins a team has minus the amount of wins an average bubble team would expect vs. the team's schedule [Source](https://sethburn.wordpress.com/2019/03/04/parcells-defined-why-unc-greensboro-belongs-in-the-ncaa-tournament/). Thus, a higher WAB would indicate that a team is doing well. The WAB also determines whether the team makes it to the NCAA March Madness Tournament or not.
+The Wins Above Bubble (WAB) is the amount of wins a team has minus the amount of wins an average bubble team would expect vs. the team's schedule [(source)](https://sethburn.wordpress.com/2019/03/04/parcells-defined-why-unc-greensboro-belongs-in-the-ncaa-tournament/). Thus, a higher WAB would indicate that a team is doing well. The WAB also determines whether the team makes it to the NCAA March Madness Tournament or not.
 
 In this primary analysis, I compare Iowa State's WAB values for each year to those of the other teams that are part of the Big 12 Conference.
 
@@ -194,16 +195,15 @@ ggplot(big12, aes(x = DRB, y = winPercent)) +
   ggtitle('Big 12 Teams Defensive Rebound Rate Compared to Win Rate')
 ```
 
-In this plot we can see that there is a negative coorelation between defensive rebounding rate and win rate. This is an odd coorelation because defensive rebounding is generally thought of as important to prevent second chance points from the opposing team as well as giving your team another offensive possesion. 
+In this plot we can see that there is a negative correlation between defensive rebounding rate and win rate. This is an odd correlation because defensive rebounding is generally thought of as important to prevent second chance points from the opposing team as well as giving your team another offensive possession. 
 
 ## Analysis 4
 
--Author Ahmed Hassan
-
+Author - Ahmed Hassan
 
 When a player on defense takes hold of the basketball from an offensive player, a steal happens. A turnover is caused when a player with a basketball possession loses control as a result of their own mistake (throwing the basketball out-of-bounds or the mistake of an opponent. In order to determine a player's ball control and ball handling capabilities, a Steal-to-Turnover Ratio is used.
 
-For the first graph, I'm going to explore which team has the highest  Steal to Turn Over ratio within the Big 12.
+For the first graph, I'm going to explore which team has the highest Steal to Turn Over ratio within the Big 12.
 
 ```{r}
 cbb$winPercent <- round(cbb$W/cbb$G, digits = 4)
@@ -222,9 +222,11 @@ ggplot(big12, aes(x = TEAM, y = stealToTurn, fill = factor(ifelse(TEAM=='Iowa St
   
 ```
 
-As we can see from the above analysis, Iowa State is surprislgy amongst the 3 schools qualifying for the second place spot in terms of Steal to turn over ratio, alon gwith Kansas St and Texas Tech. West Virginia being in the first spot. Safe to say Iowa state has somes impressive player's with  ball control and ball handling capabilities.
+As we can see from the above analysis, Iowa State is surprisingly among the 3 schools qualifying for the second place spot in terms of Steal to turn over ratio, along with Kansas St and Texas Tech. West Virginia being in the first spot. Safe to say Iowa state has some impressive players with ball control and ball handling capabilities.
 
 ## Analysis 5
+
+Author - Ahmed Hassan
 
 ```{r}
 big12 <- subset(cbb, CONF == 'B12')
@@ -236,13 +238,16 @@ FTR <- big12$FTR
 TEAM <- big12$TEAM
 ggplot(big12, aes(x= B12WP,y= FTR , color= factor(TEAM))) + geom_point(pos="identity" , stat= "identity", show.legend= TRUE ) + xlab('Big 12 Win %') + ylab('Big 12 Free Throw Ratio') + ggtitle('Big 12 Wins compaired to FTR') + labs(color= 'Team')
 ```
-The Data of the Graph show's that There is little to no correlation between how a team performs and what their Free Throw Ratio is.
-Next I am going to Craft a Bar chart to compare Iowa States FTR to other Colleges in the Big 12
+
+The Ddata of the graph shows that there is little to no correlation between how a team performs and what their Free Throw Ratio is.
+Next I am going to craft a bar chart to compare Iowa State's FTR to other colleges in the Big 12
 ```{r}
 Year <- big12$YEAR
 ggplot(big12, aes(x= TEAM, y= FTR, color= factor(Year))) +  geom_bar(pos= 'stack', stat= 'identity', show.legend = TRUE) + xlab('Team') + ylab('Free Throw Ratio') + ggtitle('Big 12 Free throw Ratio Compaired') + labs(color= 'Year')
 ```
-From the graph we can determine that the years Iowa State has had a relatively low FTR meaning that Iowa State players most likely take more jump shots outside of traffic then other colleges.
+
+From the graph we can determine that the years Iowa State has had a relatively low FTR meaning that Iowa State players most likely take more jump shots outside of traffic than other colleges.
 
 ## Conclusion
 
+Overall, there are many different variables that effect whether a team wins or loses a game in basketball. Some of these factors include 3- and 2-point shooting, turnover, and rebound percentages. Better percentages in these factors leads to higher wins above bubble (WAB) and wins in general which in turn can lead to better seasons, even for Iowa State. However, one statistic shows the opposite. A higher DRB rate does not lead to a higher win rate.
