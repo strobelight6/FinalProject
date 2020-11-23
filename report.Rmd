@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r message=FALSE}
+```{r message=FALSE, include=FALSE}
 library(tidyverse)
 library(ggpubr)
 library(dplyr)
@@ -32,8 +32,8 @@ Specifically, we wanted to determine how the following statistics impact the num
 
 
 ## Obtaining/Cleaning the data
-Dataset cbb contains statistics for each team in seasons 2015-2019 combined. Dataset cbb[n] has statistics for each team for season n. Added the data for 2020 to cbb since it has not been added.
-```{r messages=FALSE}
+Data set cbb contains statistics for each team in seasons 2015-2019 combined. Data set cbb[n] has statistics for each team for season n. The the data for 2020, cbb20, was joined to cbb since it was not included automatically.
+```{r include=FALSE, messages=FALSE}
 cbb <- read.csv("datasets/cbb.csv")
 ##head(cbb)
 cbb15 <- read.csv("datasets/cbb15.csv")
@@ -59,7 +59,7 @@ For this analysis I looked at the 3-point shooting percentage statistic in our d
 
 The first area I wanted to explore was to see how each teams 3-point shooting percentage changed over the course of 6 years from 2015 - 2020.
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 big12 <- subset(cbb, CONF == 'B12')
 cbb$TEAM <- as.factor(cbb$TEAM)
 ggplot(big12, aes(x = YEAR, y = X3P_O)) + geom_line() + 
@@ -74,7 +74,7 @@ Based on the above graph we can see that most teams ended 2020 with a worse perc
 
 To get a better idea of how Iowa State compares to its competition in the Big 12 conference, I made a bar graph which shows each team’s average 3-point shooting percentage over the 6 years.
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 big12 <- group_by(big12, TEAM)
 summBig12 <- summarise(big12, avg3PntPercent = round(mean(X3P_O),2))
 ggplot(summBig12, aes(x = TEAM, y = avg3PntPercent, fill = factor(ifelse(TEAM=='Iowa St.', 'Highlighted', 'Normal')))) + 
@@ -90,7 +90,7 @@ With this graph we can see that Kansas holds the first-place spot and Iowa State
 
 Another question I answered was does a higher 3-Point percentage lead to more wins? To visualize this, I found the percentage of wins for each team from 2015 - 2020 then I compared it to each team’s average 3-point shooting percentage for each of those 6 years.
 
-```{r}
+```{r echo=FALSE}
 
 big12$winPercent <- round(big12$W/big12$G, digits = 4)
 
@@ -113,7 +113,7 @@ The Wins Above Bubble (WAB) is the amount of wins a team has minus the amount of
 
 In this primary analysis, I compare Iowa State's WAB values for each year to those of the other teams that are part of the Big 12 Conference.
 
-```{r}
+```{r echo=FALSE}
 compareWAB <- ggplot(big12, aes(x = TEAM, y = WAB ,color= factor(YEAR))) + 
   geom_point(pos = 'stack', stat = 'identity',  show.legend = TRUE)+
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5))+ 
@@ -126,8 +126,8 @@ compareWAB
 
 According to the above plot, Iowa State was doing well in terms of getting positive WAB values in 2015, 2016, and 2017.  But more recently, they have not been doing well in their number of wins, as the resulting WAB scores are lower; 2018 hitting below 0 and 2020 at 0. Most of the other teams, especially Kansas, seem to be doing much better in their recent years compared to Iowa State.
 
-I then wanted to see what affects the WAB, so I created four plots comparing the three point shooting percentage, two point shooting percentage, turnover rate, and free throw rate to the WAB for the teams.
-```{r}
+I then wanted to see what affects the WAB, so I created four plots, utilizing ggarange from the ggpubr library, comparing the three point shooting percentage, two point shooting percentage, turnover rate, and free throw rate to the WAB for the teams.
+```{r echo=FALSE}
 thrVWAB <- ggplot(big12, aes(x = X3P_O, y = WAB)) + geom_point() + geom_smooth(method = 'lm')  + xlab("Three Point Shooting %")
 twoVWAB <- ggplot(big12, aes(x = X2P_O, y = WAB)) + geom_point() + geom_smooth(method = 'lm') + xlab("Two Point Shooting %")
 TORVWAB <- ggplot(big12, aes(x = TOR, y = WAB)) + geom_point() + geom_smooth(method = 'lm', color = 'red') + xlab("Turnover % Allowed")
@@ -145,7 +145,7 @@ For this analysis I will look at how rebounding affects team success in the Big 
 
 To begin, we simply compare how teams are rebounding over the years 2015-2020 
 
-```{r}
+```{r echo=FALSE}
 big12 %>% 
   ggplot(aes(x=YEAR, y=ORB, group=TEAM, color=TEAM)) + 
   geom_line() +
@@ -158,7 +158,7 @@ big12 %>%
 
 We can see that Baylor and West Virginia are consistently atop the Big 12 conference in respect to offensive rebounding while Iowa State as well as other tend to be near the bottom of the conference.
 
-```{r}
+```{r echo=FALSE}
 big12 %>% 
   ggplot(aes(x=YEAR, y=DRB, group=TEAM, color=TEAM)) + 
   geom_line() +
@@ -173,7 +173,7 @@ For defensive rebounding we can see that teams are not as decisively different, 
 
 Next, we will analyze whether offensive and defensive rebounding have an impact on winning games. 
 
-```{r}
+```{r echo=FALSE}
 ggplot(big12, aes(x = ORB, y = winPercent)) + 
   geom_point() +
   geom_smooth(method = 'lm', color = 'red') +
@@ -185,7 +185,7 @@ ggplot(big12, aes(x = ORB, y = winPercent)) +
 
 From the plot, we can see that there is a slight positive correlation between ORB and Win Rate. One reason for a positive coorelation could be because team that get more offensive rebounds will have more opportunities for second chance points and will score more often which leads to winning. 
 
-```{r}
+```{r echo=FALSE}
 ggplot(big12, aes(x = DRB, y = winPercent)) + 
   geom_point() +
   geom_smooth(method = 'lm', color = 'red') +
@@ -205,7 +205,7 @@ When a player on defense takes hold of the basketball from an offensive player, 
 
 For the first graph, I'm going to explore which team has the highest Steal to Turn Over ratio within the Big 12.
 
-```{r}
+```{r echo=FALSE}
 cbb$winPercent <- round(cbb$W/cbb$G, digits = 4)
 cbb$stealToTurn <- round(cbb$TORD/cbb$TOR, digits = 4)
 big12$stealToTurn <- round(big12$TORD/big12$TOR, digits = 4)
@@ -228,20 +228,20 @@ As we can see from the above analysis, Iowa State is surprisingly among the 3 sc
 
 Author - Ahmed Hassan
 
-```{r}
+```{r echo=FALSE}
 big12 <- subset(cbb, CONF == 'B12')
 ```
 For this Analysis I am looking at Free Throw Ratio(FTR) and wins in the Big 12. FTR is the ratio of Free Throw Attempts to Field Goal Attempts and is calculated by dividing Free Throw Attempts by Field Goal Attempts and converted to a percentage. I am looking into whether or not a low Free Throw Ratio leads to a higher win rate.
-```{r}
+```{r echo=FALSE}
 B12WP <- round(big12$W/big12$G, digits = 4)
 FTR <- big12$FTR
 TEAM <- big12$TEAM
 ggplot(big12, aes(x= B12WP,y= FTR , color= factor(TEAM))) + geom_point(pos="identity" , stat= "identity", show.legend= TRUE ) + xlab('Big 12 Win %') + ylab('Big 12 Free Throw Ratio') + ggtitle('Big 12 Wins compaired to FTR') + labs(color= 'Team')
 ```
 
-The Ddata of the graph shows that there is little to no correlation between how a team performs and what their Free Throw Ratio is.
+The data of the graph shows that there is little to no correlation between how a team performs and what their Free Throw Ratio is.
 Next I am going to craft a bar chart to compare Iowa State's FTR to other colleges in the Big 12
-```{r}
+```{r echo=FALSE}
 Year <- big12$YEAR
 ggplot(big12, aes(x= TEAM, y= FTR, color= factor(Year))) +  geom_bar(pos= 'stack', stat= 'identity', show.legend = TRUE) + xlab('Team') + ylab('Free Throw Ratio') + ggtitle('Big 12 Free throw Ratio Compaired') + labs(color= 'Year')
 ```
@@ -251,3 +251,7 @@ From the graph we can determine that the years Iowa State has had a relatively l
 ## Conclusion
 
 Overall, there are many different variables that effect whether a team wins or loses a game in basketball. Some of these factors include 3- and 2-point shooting, turnover, and rebound percentages. Better percentages in these factors leads to higher wins above bubble (WAB) and wins in general which in turn can lead to better seasons, even for Iowa State. However, one statistic shows the opposite. A higher DRB rate does not lead to a higher win rate.
+
+## Contributions
+
+Each analysis lists its respective author, who created the analysis and included it in the report. Data was uploaded and cleaned by Joel Martin. Background and conclusion were written by Joel Strobel. Report was formatted by Rabsa Naseer and Joel Strobel.
