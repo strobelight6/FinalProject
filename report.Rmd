@@ -254,4 +254,4 @@ Overall, there are many different variables that effect whether a team wins or l
 
 ## Contributions
 
-Each analysis lists its respective author, who created the analysis and included it in the report. Data was uploaded and cleaned by Joel Martin. Background and conclusion were written by Joel Strobel. Report was formatted by Rabsa Naseer and Joel Strobel.
+Each analysis lists its respective author, who created the analysis and included it in the report. Data was uploaded and cleaned by Joel Martin. Background and conclusion were written by Joseph Strobel. Report was formatted by Rabsa Naseer and Joseph Strobel.
