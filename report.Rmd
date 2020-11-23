@@ -226,7 +226,7 @@ As we can see from the above analysis, Iowa State is surprisingly among the 3 sc
 
 ## Analysis 5
 
-Author - Ahmed Hassan
+Author - Wil Hillmer
 
 ```{r echo=FALSE}
 big12 <- subset(cbb, CONF == 'B12')
